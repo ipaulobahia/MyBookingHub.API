@@ -1,0 +1,78 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Service {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name        String
+  description String?
+  duration    Int
+  price       Float
+
+  businessId String
+
+  appointments Appointment[] @relation("ServiceToAppointments")
+}
+
+model Appointment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  startTime DateTime          @map("start_time")
+  endTime   DateTime          @map("end_time")
+  status    AppointmentStatus @default(PENDING)
+  notes     String?
+
+  cancelReason String?   @map("cancel_reason")
+  cancelledAt  DateTime? @map("cancelled_at")
+
+  businessId String
+
+  employeeId String
+  clientId   String
+
+  service   Service @relation("ServiceToAppointments", fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String
+
+  paymentStatus PaymentStatus? @default(PENDING)
+  paymentMethod PaymentMethod?
+  paidAt        DateTime?      @map("paid_at")
+
+  @@index([businessId, status])
+  @@index([startTime])
+  @@index([employeeId, startTime])
+}
+
+enum AppointmentStatus {
+  PENDING // Agendamento solicitado, aguardando confirmação
+  CONFIRMED // Agendamento confirmado pelo estabelecimento
+  COMPLETED // Serviço realizado com sucesso
+  CANCELLED // Agendamento cancelado
+  NO_SHOW // Cliente não compareceu
+  RESCHEDULED // Reagendado para outra data
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  FAILED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  TRANSFER
+  OTHER
+}
