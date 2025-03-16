@@ -1,4 +1,6 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { AuthService } from "src/auth/services/auth.service";
+import { ServiceService } from "src/service/services/service.service";
 import { CancelAppointmentDto } from "../dto/cancel-appointment.dto";
 import { CreateAppointmentDto } from "../dto/create-appointment.dto";
 import { UpdateStatusAppointmentDto } from "../dto/update-status-appointment.dto";
@@ -8,88 +10,83 @@ import { IAppointmentRepository } from "../repositories/appointment-repository.i
 export class AppointmentService {
   constructor(
     @Inject('APPOINTMENT_REPOSITORY')
-    private readonly appointmentRepository: IAppointmentRepository
+    private readonly appointmentRepository: IAppointmentRepository,
+    private readonly authService: AuthService,
+    private readonly serviceService: ServiceService
   ) { }
 
   async findAll(businessId: string) {
-    // TODO: Validar se o estabelecimento existe.
-    // const business = await this.authClient(businessId)
+    const business = await this.authService.getBusinessById(businessId)
 
-    // if (!business) {
-    //   throw new NotFoundException('Estabelecimento não encontrado')
-    // }
+    if (!business) {
+      throw new NotFoundException('Estabelecimento não encontrado')
+    }
 
     return await this.appointmentRepository.findAll(businessId)
   }
 
   async findOne(appointmentId: string, businessId: string) {
-    // TODO: Validar se o estabelecimento existe.
-    // const business = await this.authClient(businessId)
+    const business = await this.authService.getBusinessById(businessId)
 
-    // if (!business) {
-    //   throw new NotFoundException('Estabelecimento não encontrado')
-    // }
+    if (!business) {
+      throw new NotFoundException('Estabelecimento não encontrado')
+    }
 
     return await this.appointmentRepository.findOne(appointmentId, businessId)
   }
 
   async findByUserId(userId: string, businessId: string) {
-    // TODO: Validar se o estabelecimento existe.
-    // const business = await this.authClient(businessId)
+    const business = await this.authService.getBusinessById(businessId)
 
-    // if (!business) {
-    //   throw new NotFoundException('Estabelecimento não encontrado')
-    // }
+    if (!business) {
+      throw new NotFoundException('Estabelecimento não encontrado')
+    }
 
-    // TODO: Validar se o usuário existe.
-    // const user = await this.authClient(userId)
+    const user = await this.authService.getUserById(userId)
 
-    // if (!user) {
-    //   throw new NotFoundException('Usuário não encontrado')
-    // }
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado')
+    }
 
     return await this.appointmentRepository.findByUserId(userId, businessId)
   }
 
   async create(businessId: string, createAppointmentDto: CreateAppointmentDto) {
-    // TODO: Validar se o estabelecimento existe.
-    // const business = await this.authClient(businessId)
+    const { serviceId, employeeId, clientId } = createAppointmentDto
 
-    // if (!business) {
-    //   throw new NotFoundException('Estabelecimento não encontrado')
-    // }
+    const business = await this.authService.getBusinessById(businessId)
 
-    // TODO: Validar se o funcionário existe.
-    // const employee = await this.authClient(employeeId)
+    if (!business) {
+      throw new NotFoundException('Estabelecimento não encontrado')
+    }
 
-    // if (!employee) {
-    //   throw new NotFoundException('Usuário não encontrado')
-    // }
+    const employee = await this.authService.getUserById(employeeId)
 
-    // TODO: Validar se o cliente existe.
-    // const client = await this.authClient(clientId)
+    if (!employee) {
+      throw new NotFoundException('Usuário não encontrado')
+    }
 
-    // if (!client) {
-    //   throw new NotFoundException('Usuário não encontrado')
-    // }
+    const client = await this.authService.getUserById(clientId)
 
-    // TODO: Validar se o serviço existe.
-    // const service = await this.service.findOne(serviceId)
+    if (!client) {
+      throw new NotFoundException('Usuário não encontrado')
+    }
 
-    // if (!service) {
-    //   throw new NotFoundException('Serviço não encontrado')
-    // }
+    const service = await this.serviceService.findOne(serviceId, businessId)
+
+    if (!service) {
+      throw new NotFoundException('Serviço não encontrado')
+    }
 
     return await this.appointmentRepository.create(createAppointmentDto, businessId)
   }
 
   async updateStatusAppointment(appointmentId: string, businessId: string, updateStatusAppointmentDto: UpdateStatusAppointmentDto) {
-    // TODO: Validar se o estabelecimento existe.
-    // const business = await this.authClient(businessId)
+    const business = await this.authService.getBusinessById(businessId)
 
-    // if (!business) {
-    //   throw new NotFoundException('Estabelecimento não encontrado')
-    // }
+    if (!business) {
+      throw new NotFoundException('Estabelecimento não encontrado')
+    }
 
     const appointment = await this.appointmentRepository.findOne(appointmentId, businessId)
 
@@ -101,12 +98,11 @@ export class AppointmentService {
   }
 
   async cancelAppointment(appointmentId: string, businessId: string, cancelAppointmentDto: CancelAppointmentDto) {
-    // TODO: Validar se o estabelecimento existe.
-    // const business = await this.authClient(businessId)
+    const business = await this.authService.getBusinessById(businessId)
 
-    // if (!business) {
-    //   throw new NotFoundException('Estabelecimento não encontrado')
-    // }
+    if (!business) {
+      throw new NotFoundException('Estabelecimento não encontrado')
+    }
 
     const appointment = await this.appointmentRepository.findOne(appointmentId, businessId)
 
@@ -118,12 +114,11 @@ export class AppointmentService {
   }
 
   async delete(appointmentId: string, businessId: string) {
-    // TODO: Validar se o estabelecimento existe.
-    // const business = await this.authClient(businessId)
+    const business = await this.authService.getBusinessById(businessId)
 
-    // if (!business) {
-    //   throw new NotFoundException('Estabelecimento não encontrado')
-    // }
+    if (!business) {
+      throw new NotFoundException('Estabelecimento não encontrado')
+    }
 
     const appointment = await this.appointmentRepository.findOne(appointmentId, businessId)
 

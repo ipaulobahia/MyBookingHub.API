@@ -1,7 +1,7 @@
+import { Appointment } from "@prisma/client";
 import { CancelAppointmentDto } from "../dto/cancel-appointment.dto";
 import { CreateAppointmentDto } from "../dto/create-appointment.dto";
 import { UpdateStatusAppointmentDto } from "../dto/update-status-appointment.dto";
-import { Appointment } from "../models/business.model";
 
 export interface IAppointmentRepository {
   findAll(businessId: string): Promise<Appointment[]>
