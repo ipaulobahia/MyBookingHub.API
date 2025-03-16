@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { AppointmentModule } from './appointment/appointment.module';
+import { AuthModule } from './auth/auth.module';
 import config from './config';
 import { enviroments, Environment } from './environments';
 import { PrismaModule } from './prisma/prisma.module';
@@ -21,6 +22,7 @@ import { PrismaModule } from './prisma/prisma.module';
       validationOptions: { abortEarly: true },
     }),
     PrismaModule,
+    AuthModule,
     AppointmentModule
   ],
   controllers: [],
