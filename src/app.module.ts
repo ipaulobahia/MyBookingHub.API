@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import config from './config';
 import { enviroments, Environment } from './environments';
 import { PrismaModule } from './prisma/prisma.module';
+import { ServiceModule } from './service/service.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     PrismaModule,
     AuthModule,
-    AppointmentModule
+    AppointmentModule,
+    ServiceModule
   ],
   controllers: [],
   providers: [],
