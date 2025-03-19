@@ -52,6 +52,34 @@ model Appointment {
   @@index([employeeId, startTime])
 }
 
+model OperationHours {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  dayOfWeek    DayOfWeek
+  specificDate DateTime?
+  isAbsence    Boolean   @default(false)
+
+  timeIntervals TimeInterval[]
+
+  businessId String
+
+  @@unique([businessId, dayOfWeek])
+}
+
+model TimeInterval {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  startTime DateTime
+  endTime   DateTime
+
+  operatingHours  OperationHours @relation(fields: [operatingHourId], references: [id], onDelete: Cascade)
+  operatingHourId String
+}
+
 enum AppointmentStatus {
   PENDING // Agendamento solicitado, aguardando confirmação
   CONFIRMED // Agendamento confirmado pelo estabelecimento
@@ -75,4 +103,14 @@ enum PaymentMethod {
   PIX
   TRANSFER
   OTHER
+}
+
+enum DayOfWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }
